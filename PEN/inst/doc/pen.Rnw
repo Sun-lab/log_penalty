@@ -1,0 +1,127 @@
+% \VignetteIndexEntry{PEN Introduction}
+%\VignetteDepends{PEN}
+%\VignettePackage{PEN}
+\documentclass{article}
+
+\usepackage{natbib}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage[utf8]{inputenc}
+
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\cov}{cov}
+
+
+\begin{document}
+
+<<PEN,include=FALSE,echo=FALSE>>=
+options(keep.source = TRUE, width = 60)
+PEN <- packageDescription("PEN")
+@
+
+\title{PEN Package Example}
+\author{Ting-Huei Chen}
+\maketitle
+
+
+
+\title{PEN: a penalized estimation method for binary and continuous response variables.}
+\author{}
+\maketitle
+
+\section{Overview}
+<<>>=
+library(PEN)
+@
+This penalized estimation method is motivated by multiple loci mapping for gene expression and case-control study. This vignette describes how to use PEN based on the two example dataset for those studies.
+
+\section{PEN: Examples Using Simulated Data}
+\subsection{Example for case-control study}
+We first illustrate the usage of PEN by a simulated data. Specifically, we simulated 1,100 SNPs on chromosomes 1 to 22 with 50 SNPs on each chromosome by GWAsimulator (\cite{li2008gwasimulator}). Among them, 3 disease loci (3 SNPs) are located on chromosomes 2, 11, and 22. The three randomly selected SNPs have minor allele frequencies, 0.24, 0.29 and  0.30 respectively. For the case-control disease model, the parameters setting for the simulated data are summarized in the table 1. Let RR1 be  the genotypic relative risk of the genotype with one copy of the risk allele versus that with zero copy of the risk allele and RR2 be the genotypic relative risk of the genotype with two copies of the risk allele versus that with zero copy of the risk allele.
+ \begin{table}[htbp]
+  \caption{Parameter setting for GWAsimulator }
+\centering
+{\begin{tabular}{ccc}	
+\hline
+SNP's chromosome index & RR1 & RR2 \\
+\hline
+2 	& 	3.0 & 3.0 \\
+11	&	1.5 & 2.0 \\
+22	&	2.0 & 3.0 \\
+\hline
+\end{tabular}}
+\label{table1}
+\end{table}
+In addition, the disease prevalence is set as 0.05, and the sample size is 300 with 150 cases and controls respectively.\\
+
+
+To conduct the analysis,  first, load the data into R workspace, and check the dimensions and a few rows of the data. 
+<<>>=
+data(XData)
+data(XInfo)
+dim(XData)
+mode(XData)
+data(XIndex)
+@
+
+For \verb@XData@, the mode should be numerical matrix format with the column names as covariates indexes, and rows names as samples. The indexes of covariates start from non-genotypic variables and followed by genotypic data such as SNPs, which are ordered in genomic positions. \verb@XInfo@ is a numerical vector matched to the covariates indexes of \verb@XData@ with 0 to index non-genotypic covariates and 1 to 22 autosomal chromosomes and 23 for X chromosomes. 
+The index vector  \verb@XIndex@ with length of number of covariates consists 0 and 1 to index covariates to be unpenalized and penalized respectively. In this example, the first covariate is age, which is considered to be an unpenalized variable. Therefore, the first element of \verb@XInfo@ and \verb@XIndex@ is assigned to be 0.
+
+
+For case-control study example, assume additive effect of the copy of the risk allele and the logistic model on the disease status $y$, $y=1$ for cases and $y=0$ for controls. Let $X$ denote the \verb@XData@ matrix, $\alpha$ be the intercept, and  $\beta$ be the coefficient matrix. The logistic regression model is 
+\begin{eqnarray*}
+	 \log \{{\mbox{Pr}(y = 1 | X)/\mbox{Pr}(y = 0 | X)} \}&=& \alpha + X \beta.
+\end{eqnarray*}
+Next, load the response vector  \verb@Y@.
+<<>>=
+data(Y)
+@
+To obtain the estimates of the coefficient matrix, run the R function \verb@PEN@. The following illustration is based on SICA penalty and default chromosomal updating order, from chromosomes 1 to 22 for the iterative coefficient estimation procedure. 
+<<>>=
+out <- PEN( X=XData,  y=Y, family=c("binomial"), penalty
+=c("SICA"), ChooseXindex=XIndex)
+out$beta[which(out$beta!=0)]    
+@
+Next, a regular logistic regression is applied to the response and the selected SNPs to obtain the p-values corresponding to the regression coefficients for those SNPs. A comparison to the p-values obtained by univariate logistic regression on each of 1100 SNPs and the true simulated disease loci position is summarized in figure 1. 
+\begin{figure}[thb]
+\centering
+   \includegraphics[width = 1.0 \textwidth]{case_control.png}
+    \caption{The manhattan plot of the $-\log_{10}$p-values obtained by univariate logistic regression on each of 1100 SNPs. The three purple lines denote the three simulated true disease loci, and the three black star symbols denote the $-\log_{10}$p-values obtained by the regular logistic regression on the joint three selected SNPs by the penalized estimation approach.}
+\end{figure}
+\subsection{Example for gene expression study}
+For the example of gene expression study, the genotype matrix is the same as that of the case-control example, and three SNPs are randomly picked to be the causal ones. The the gene expression response vector,  \verb@Y_g@ is simulated by linear model with coefficients vector $(0.5, -0.5, 0.5)$ and residuals $e$ following standard normal distribution. 
+\begin{eqnarray*}
+	y_g  &=& \alpha + X \beta + e.
+\end{eqnarray*}
+
+Similarly, user can run the R function \verb@PEN@ to obtain the estimates of the coefficient matrix. 
+<<>>=
+data(Y_g)
+out <- PEN( X=XData,  y=Y_g, family=c("gaussian"), penalty
+=c("SICA"), ChooseXindex=XIndex)
+out$beta[which(out$beta!=0)]    
+@
+
+A comparison to the p-values obtained by univariate linear regression on each of 1100 SNPs and the true simulated causal loci position is summarized in figure 2. 
+\begin{figure}[thb]
+\centering
+   \includegraphics[width = 1.0 \textwidth]{gene_expression.png}
+    \caption{The manhattan plot of the $-\log_{10}$p-values obtained by univariate linear regression on each of 1100 SNPs. The three purple lines denote the three simulated true disease loci, and the three black star symbols denote the $-\log_{10}$p-values obtained by the regular linear regression on the joint three selected SNPs by the penalized estimation approach.}
+\end{figure}
+
+
+
+
+\begin{thebibliography}{}
+\bibitem[Li and Li(2008)Li and Li]{li2008gwasimulator}
+Li, C. and Li, M. (2008).
+\newblock Gwasimulator: a rapid whole-genome simulation program.
+\newblock {\em Bioinformatics\/}, {\bf 24}(1), 140--142.
+\end{thebibliography}
+
+
+
+
+
+\end{document}

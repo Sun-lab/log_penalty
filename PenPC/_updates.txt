@@ -1,0 +1,9 @@
+0.99.102
+	Date: 2017-04-04
+	Author: Wei Sun
+	Updates:
+		1. Add R function ne.PEN.uniformTune.R, which use the same set of tuning parameters 
+			 for all neighborhood selection. In addition, it allow the tuning selection method 
+			 to be "None", so that the coefficients estimates across all the tuning parameters 
+			 are returned. 
+			 

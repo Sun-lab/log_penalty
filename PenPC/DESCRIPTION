@@ -1,0 +1,13 @@
+Package: PenPC
+Type: Package
+Title: A Two-step Approach to Estimate the Skeletons of High
+        Dimensional Directed Acyclic Graphs
+Version: 0.99.102
+Date: 2016-12-20
+Author: Min Jin Ha
+Maintainer: Min Jin Ha <minjin.ha@gmail.com>
+Depends: pcalg, igraph, mvtnorm, PEN
+Description: Estimating skeletons of directed Acyclic graphs from Gaussian Graphical Models
+License: GPL (>= 2)
+Packaged: 2017-04-04 23:23:17 UTC; wsun
+NeedsCompilation: no

@@ -1,0 +1,11 @@
+Package: PEN
+Type: Package
+Title: Penalized estimation procedure.
+Version: 0.99.101
+Date: 2016-12-20
+Author: Ting-Huei Chen
+Maintainer: Ting-Huei Chen <tingstat22@gmail.com>
+Description: Penalized estimation methods for linear and logistic regression using penalties SCAD, MCP, SICA or Log.
+License: GPL-2
+Packaged: 2016-12-20 20:29:48 UTC; wsun
+NeedsCompilation: yes
