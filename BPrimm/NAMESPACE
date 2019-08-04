@@ -1,0 +1,39 @@
+
+useDynLib(BPrimm)
+
+# ------------------------------------------
+# Export directives.  
+# ------------------------------------------
+
+export(AL)
+export(backward.MAL)
+export(backward.mGAP)
+export(backward.pSDR)
+export(backward)
+export(backward.pval)
+export(Bayes.AL)
+export(Bayes.Lasso)
+export(Bayes.t)
+export(detMatrix)
+export(dinvGauss)
+export(forward)
+export(IAL)
+export(mGAP)
+export(gentp)
+export(mirror)
+export(mofredsPC)
+export(eNet)
+export(marginal)
+export(plotSimulate)
+export(prepare.cross)
+export(rinvGauss)
+export(pSDR)
+export(MAL)
+
+# ------------------------------------------
+# S3method declarations.  
+# ------------------------------------------
+
+S3method(print, mGAP)
+S3method(print, pSDR)
+S3method(print, MAL)
